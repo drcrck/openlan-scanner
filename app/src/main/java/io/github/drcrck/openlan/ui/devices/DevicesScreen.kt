@@ -6,10 +6,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,6 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -77,12 +77,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -193,8 +188,10 @@ fun DevicesScreen(
                 item(key = "hero") { Hero(state, onOpenTraceroute, onOpenDiagnostics, onOpenAbout) }
 
                 // Ricerca, scelta della vista e filtri restano agganciati in alto mentre si scorre
-                if (state.devices.isNotEmpty()) stickyHeader(key = "controls") {
-                    Controls(state, onQueryChange, onToggleFilter, onModeChange)
+                if (state.devices.isNotEmpty()) {
+                    stickyHeader(key = "controls") { Controls(state, onQueryChange, onToggleFilter, onModeChange) }
+                    // Riepilogo per tipo: tutti i chip visibili su più righe (niente scorrimento laterale)
+                    item(key = "chips") { SummaryChips(state, onToggleFilter) }
                 }
 
                 if (state.network != null && !state.filtering) {
@@ -399,13 +396,12 @@ private fun Controls(
 ) {
     Column(
         Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
             .background(Brand.Deep)
-            .padding(top = 6.dp, bottom = 12.dp)
+            .padding(top = 6.dp, bottom = 10.dp)
     ) {
         SearchField(state.query, onQueryChange, Modifier.fillMaxWidth().padding(horizontal = 16.dp))
         Spacer(Modifier.height(10.dp))
-        // Riga sotto: scelta della vista a sinistra (sempre visibile), chip che scorrono a destra
+        // Scelta della vista, sempre a portata di mano anche dopo aver scrollato
         Row(verticalAlignment = Alignment.CenterVertically) {
             SingleChoiceSegmentedButtonRow(Modifier.padding(start = 16.dp, end = 8.dp)) {
                 val colors = SegmentedButtonDefaults.colors(
@@ -434,7 +430,6 @@ private fun Controls(
                     )
                 }
             }
-            Box(Modifier.weight(1f)) { SummaryChips(state, onToggleFilter) }
         }
     }
 }
@@ -473,22 +468,17 @@ private fun SearchField(query: String, onChange: (String) -> Unit, modifier: Mod
     )
 }
 
-/** Riepilogo per tipo: "Infrastruttura 3 · Server 4 · NAS 3 · …". Il bordo destro sfuma: si capisce che scorre. */
+/** Riepilogo per tipo: "Infrastruttura 3 · Server 4 · NAS 3 · …", va a capo. Ogni chip filtra la lista. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SummaryChips(state: DevicesUiState, onToggle: (ListFilter) -> Unit) {
-    Row(
-        Modifier
-            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .drawWithContent {
-                drawContent()
-                drawRect(
-                    Brush.horizontalGradient(0.88f to Color.Black, 1f to Color.Transparent),
-                    blendMode = BlendMode.DstIn,
-                )
-            }
-            .horizontalScroll(rememberScrollState())
-            .padding(start = 0.dp, end = 40.dp),
+    FlowRow(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+            .background(Brand.Deep)
+            .padding(start = 16.dp, end = 16.dp, bottom = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         state.counts.forEach { (f, n) ->
             val selected = state.filter == f
@@ -497,9 +487,10 @@ private fun SummaryChips(state: DevicesUiState, onToggle: (ListFilter) -> Unit) 
                 shape = RoundedCornerShape(50),
                 color = if (selected) Brand.TealBright else Color.White.copy(alpha = 0.10f),
                 contentColor = if (selected) Brand.Night else Color.White,
-                modifier = Modifier.heightIn(min = 48.dp).semantics { this.selected = selected },
+                // Visivamente 36dp; Surface cliccabile garantisce comunque 48dp di area di tocco
+                modifier = Modifier.heightIn(min = 36.dp).semantics { this.selected = selected },
             ) {
-                Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.padding(horizontal = 12.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(f.labelRes()), style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.width(6.dp))
                     Text(
@@ -657,9 +648,13 @@ private fun EmptyState() {
 private fun FlatHeader(state: DevicesUiState, count: Int, onClear: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 48.dp)) {
+            val results = pluralStringResource(R.plurals.filter_results, count, count)
             Text(
-                if (state.filtering) pluralStringResource(R.plurals.filter_results, count, count)
-                else pluralStringResource(R.plurals.devices_by_ip, count, count),
+                when {
+                    state.filter != null -> stringResource(state.filter.labelRes()) + " · " + results
+                    state.filtering -> results
+                    else -> pluralStringResource(R.plurals.devices_by_ip, count, count)
+                },
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f).semantics { heading() },
             )
