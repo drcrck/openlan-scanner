@@ -22,8 +22,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.PrivacyTip
@@ -122,7 +123,7 @@ fun AboutScreen(onBack: () -> Unit) {
             }
 
             item {
-                SectionCard(title = stringResource(R.string.about_promises), icon = Icons.Filled.Favorite) {
+                SectionCard(title = stringResource(R.string.about_promises), icon = Icons.Filled.VerifiedUser) {
                     Promise(stringResource(R.string.promise_open))
                     Promise(stringResource(R.string.promise_local))
                     Promise(stringResource(R.string.promise_noaccount))
@@ -169,7 +170,7 @@ fun AboutScreen(onBack: () -> Unit) {
 @Composable
 private fun Promise(text: String) {
     Row(verticalAlignment = Alignment.Top) {
-        Text("✓", color = Brand.Online, fontWeight = FontWeight.Bold, modifier = Modifier.width(22.dp))
+        Icon(Icons.Filled.Check, null, tint = Brand.Online, modifier = Modifier.padding(end = 8.dp).size(18.dp))
         Text(text, style = MaterialTheme.typography.bodyMedium)
     }
 }

@@ -29,27 +29,20 @@ class PingTool {
     }
 }
 
-/** Serie di ping con statistiche; [samples] tiene gli ultimi [WINDOW] valori (null = perso). */
+/** Statistiche calcolate sulla stessa finestra mostrata dal grafico (ultimi [WINDOW] campioni). */
 data class PingStats(
     val samples: List<Double?> = emptyList(),
-    val sent: Int = 0,
-    val received: Int = 0,
-    val min: Double? = null,
-    val max: Double? = null,
-    val sum: Double = 0.0,
 ) {
+    private val ok: List<Double> get() = samples.filterNotNull()
+    val sent: Int get() = samples.size
+    val received: Int get() = ok.size
+    val min: Double? get() = ok.minOrNull()
+    val max: Double? get() = ok.maxOrNull()
     val last: Double? get() = samples.lastOrNull()
-    val avg: Double? get() = if (received == 0) null else sum / received
+    val avg: Double? get() = if (ok.isEmpty()) null else ok.average()
     val lossPercent: Double get() = if (sent == 0) 0.0 else (sent - received) * 100.0 / sent
 
-    fun add(rtt: Double?): PingStats = copy(
-        samples = (samples + rtt).takeLast(WINDOW),
-        sent = sent + 1,
-        received = received + if (rtt != null) 1 else 0,
-        min = if (rtt == null) min else minOf(min ?: rtt, rtt),
-        max = if (rtt == null) max else maxOf(max ?: rtt, rtt),
-        sum = sum + (rtt ?: 0.0),
-    )
+    fun add(rtt: Double?): PingStats = copy(samples = (samples + rtt).takeLast(WINDOW))
 
     companion object {
         const val WINDOW = 60

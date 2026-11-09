@@ -57,12 +57,13 @@ fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
 
             // Scala: il massimo visibile arrotondato, almeno 5 ms
             val visibleMax = stats.samples.filterNotNull().maxOrNull() ?: 0.0
-            val scale = niceCeil(maxOf(visibleMax * 1.15, 5.0))
+            // Pavimento a 10 ms: la scala non salta tra 5/10/20 ms per variazioni minime
+            val scale = niceCeil(maxOf(visibleMax * 1.15, 10.0))
 
             Row {
                 Text("${fmt(scale)} ms", style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                Text(stringResource(R.string.ping_window, PingStats.WINDOW), style = MaterialTheme.typography.labelSmall,
+                Text(stringResource(R.string.ping_window_stats, PingStats.WINDOW), style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Canvas(Modifier.fillMaxWidth().height(110.dp)) {

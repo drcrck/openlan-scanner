@@ -1,12 +1,18 @@
 package io.github.drcrck.openlan.ads
 
 import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -63,21 +69,31 @@ object Ads {
         UserMessagingPlatform.showPrivacyOptionsForm(activity) { _ -> }
     }
 
+    // Banner adattivo "piccolo" (non la variante Large): resta discreto, come promesso nell'app
+    @Suppress("DEPRECATION")
     @Composable
     fun Banner(modifier: Modifier = Modifier) {
         val isReady by ready
         if (!isReady) return
-        val widthDp = LocalConfiguration.current.screenWidthDp
-        AndroidView(
-            modifier = modifier.fillMaxWidth(),
-            factory = { ctx ->
-                AdView(ctx).apply {
-                    setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(ctx, widthDp))
-                    adUnitId = BuildConfig.ADMOB_BANNER_ID
-                    loadAd(AdRequest.Builder().build())
-                }
-            },
-            onRelease = { it.destroy() },
-        )
+        // Il banner sta su una fascia del colore di superficie con un separatore: separato dal contenuto,
+        // e nel tema scuro non è una striscia bianca appoggiata al nulla.
+        Column(modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            // Larghezza reale del contenitore (nel layout a due colonne è solo il pannello destro)
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val widthDp = maxWidth.value.toInt()
+                AndroidView(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    factory = { ctx ->
+                        AdView(ctx).apply {
+                            setAdSize(AdSize.getPortraitAnchoredAdaptiveBannerAdSize(ctx, widthDp))
+                            adUnitId = BuildConfig.ADMOB_BANNER_ID
+                            loadAd(AdRequest.Builder().build())
+                        }
+                    },
+                    onRelease = { it.destroy() },
+                )
+            }
+        }
     }
 }

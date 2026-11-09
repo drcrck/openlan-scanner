@@ -49,6 +49,9 @@ data class DeviceEntity(
     val services: String? = null,
     /** Nome dell'enum [io.github.drcrck.openlan.scanner.DeviceType]. */
     val deviceType: String? = null,
+    // Versione 3: porte aperte trovate nell'ultima scansione porte ("80,443,22"), per mostrarle subito
+    val openPorts: String? = null,
+    val portsScannedAt: Long? = null,
 )
 
 @Entity(tableName = "scan_runs", indices = [Index("networkKey")])

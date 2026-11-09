@@ -35,6 +35,9 @@ interface DeviceDao {
 
     @Query("UPDATE devices SET customName = :name WHERE id = :id")
     suspend fun rename(id: Long, name: String?)
+
+    @Query("UPDATE devices SET openPorts = :ports, portsScannedAt = :at WHERE id = :id")
+    suspend fun savePorts(id: Long, ports: String, at: Long)
 }
 
 @Dao

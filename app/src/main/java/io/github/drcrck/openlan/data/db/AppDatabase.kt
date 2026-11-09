@@ -8,10 +8,10 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [NetworkEntity::class, DeviceEntity::class, ScanRunEntity::class, ScanResultEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
     // v2: nuove colonne facoltative su devices (Room genera la migrazione dallo schema in app/schemas)
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun networkDao(): NetworkDao

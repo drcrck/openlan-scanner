@@ -108,13 +108,27 @@ fun TracerouteScreen(
             }
             state.error?.let { item { Text(it.resolve(context), color = MaterialTheme.colorScheme.error) } }
 
-            if (state.finished) item { Summary(state.hops); Spacer(Modifier.height(16.dp)) }
+            if (state.finished && state.allSilent) item {
+                // Onestà: lo strumento qui non funziona, e lo diciamo invece di stampare 30 righe vuote
+                SectionCard(title = stringResource(R.string.trace_silent_title), icon = Icons.Filled.Public) {
+                    Text(stringResource(R.string.trace_silent_body), style = MaterialTheme.typography.bodyMedium)
+                }
+            } else if (state.finished) item { Summary(state.hops); Spacer(Modifier.height(16.dp)) }
 
             itemsIndexed(state.hops, key = { _, h -> h.ttl }) { i, h ->
                 HopRow(h, first = i == 0, last = i == state.hops.lastIndex)
             }
 
-            if (!state.running && state.hops.isEmpty() && state.error == null) {
+            if (state.finished && !state.allSilent && state.hiddenSilent > 0) item {
+                Text(
+                    stringResource(R.string.trace_hidden_silent, state.hiddenSilent),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 52.dp, top = 4.dp),
+                )
+            }
+
+            if (!state.running && !state.finished && state.hops.isEmpty() && state.error == null) {
                 item {
                     Text(
                         stringResource(R.string.trace_intro),

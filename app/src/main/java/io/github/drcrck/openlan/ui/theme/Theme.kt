@@ -27,8 +27,11 @@ object Brand {
     val Online = Color(0xFF22C55E)
     val Offline = Color(0xFF94A3B8)
 
+    /** Testo secondario sull'intestazione: opaco, contrasto ≥ 4.5:1 su tutta la sfumatura. */
+    val HeroText = Color(0xFFD3E2EA)
+
     /** Sfondo dell'intestazione, uguale in tema chiaro e scuro. */
-    val heroGradient = Brush.linearGradient(listOf(Night, Deep, Color(0xFF0E6B6B)))
+    val heroGradient = Brush.linearGradient(listOf(Night, Deep, Color(0xFF0C5C5E)))
 }
 
 private val LightColors = lightColorScheme(
