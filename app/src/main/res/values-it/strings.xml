@@ -27,7 +27,6 @@
     <string name="range_limited">La rete è più grande di /22: è stato scansionato solo il /24 del telefono.</string>
     <string name="empty_title">Ancora nessun dispositivo</string>
     <string name="empty_body">Tocca «Scansiona» per scoprire cosa è collegato a questa rete.</string>
-    <string name="group_offline">Non visti nell\'ultima scansione</string>
     <string name="this_phone">Questo telefono</string>
     <string name="role_self">Questo dispositivo</string>
     <string name="status_online">Online</string>
@@ -144,8 +143,6 @@
 
     <!-- Lista: ricerca, filtri, gruppi; dettaglio e traceroute (v1.1) -->
     <string name="action_close">Chiudi</string>
-    <string name="action_collapse">Comprimi</string>
-    <string name="action_expand">Espandi</string>
     <string name="action_copy_ip">Copia IP</string>
     <string name="action_open_web">Apri web</string>
     <string name="action_stop_scan">Interrompi</string>
@@ -165,12 +162,8 @@
     <string name="filter_iot">IoT</string>
     <string name="filter_unidentified">Non identificati</string>
     <string name="filter_offline">Offline</string>
-    <string name="filter_results">%1$d risultati</string>
     <string name="filter_clear">Azzera</string>
     <string name="filter_no_results">Nessun risultato. Prova con l\'IP, un nome, il produttore o parte del MAC.</string>
-    <string name="group_infra">Infrastruttura</string>
-    <string name="group_identified">Dispositivi identificati</string>
-    <string name="group_unidentified">Host non identificati</string>
     <string name="group_unidentified_hint">Rispondono in rete ma non annunciano un nome</string>
     <string name="msg_scan_stopped">Scansione interrotta</string>
     <string name="msg_scan_error_network">La rete ha smesso di rispondere durante la scansione. Controlla la connessione Wi-Fi e riprova.</string>
@@ -180,11 +173,30 @@
     <string name="ports_remembered">Trovate nella scansione del %1$s</string>
     <string name="ports_rescan">Riscansiona</string>
     <string name="scanned_at">Scansionata alle %1$s · %2$s</string>
-    <string name="search_hint">Cerca IP, nome, produttore, MAC</string>
+    <string name="search_hint">Cerca IP, nome, MAC…</string>
     <string name="search_clear">Cancella ricerca</string>
     <string name="trace_hidden_silent">Altri %1$d salti senza risposta (nascosti)</string>
     <string name="trace_silent_title">Nessun salto ha risposto</string>
-    <string name="trace_silent_body">I router su questo percorso non hanno risposto alle sonde TTL: la rete potrebbe filtrare l\'ICMP, oppure Android o l\'emulatore bloccano le risposte. Qui lo strumento non può mostrare il percorso: prova un\'altra rete o destinazione.</string>
+    <string name="trace_silent_body">I router su questo percorso non hanno risposto alle sonde TTL: la rete potrebbe filtrare l\'ICMP, oppure questo dispositivo non riceve le risposte. Da qui non si può mostrare il percorso: prova un\'altra rete o destinazione.</string>
     <string name="network_details">Rete</string>
     <string name="just_now">adesso</string>
+
+    <!-- v1.2: vista Gruppi/IP, accessibilità, ping -->
+    <string name="view_groups">Gruppi</string>
+    <string name="view_ip">IP</string>
+    <string name="filter_other">Altri</string>
+    <string name="filter_new_hint">Dispositivi visti per la prima volta nell\'ultima scansione di questa rete.</string>
+    <string name="state_expanded">aperto</string>
+    <string name="state_collapsed">chiuso</string>
+    <string name="action_copy_mac">Copia MAC</string>
+    <string name="role_self_short">Tu</string>
+    <string name="ping_summary">Ping attuale %1$s ms. Ultimi 60 secondi: minimo %2$s, medio %3$s, massimo %4$s, jitter %5$s ms, %6$s%% persi.</string>
+    <plurals name="filter_results">
+        <item quantity="one">%d risultato</item>
+        <item quantity="other">%d risultati</item>
+    </plurals>
+    <plurals name="devices_by_ip">
+        <item quantity="one">%d dispositivo, ordinato per IP</item>
+        <item quantity="other">%d dispositivi, ordinati per IP</item>
+    </plurals>
 </resources>

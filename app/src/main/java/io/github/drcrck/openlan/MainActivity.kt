@@ -132,6 +132,7 @@ class MainActivity : ComponentActivity() {
                                 onQueryChange = devicesVm::setQuery,
                                 onToggleFilter = devicesVm::toggleFilter,
                                 onClearFilters = devicesVm::clearFilters,
+                                onModeChange = devicesVm::setMode,
                                 selectedId = if (wide) selected else null,
                             )
                         }

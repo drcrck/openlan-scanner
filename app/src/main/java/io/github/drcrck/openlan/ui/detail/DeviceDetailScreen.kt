@@ -1,6 +1,11 @@
 package io.github.drcrck.openlan.ui.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.graphics.Color
+import io.github.drcrck.openlan.ui.theme.Brand
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -117,10 +122,21 @@ fun DeviceDetailScreen(
         toast(context.getString(R.string.msg_copied, text))
     }
 
+    val listState = rememberLazyListState()
+    // Il nome compare nella barra quando l'intestazione è uscita dallo schermo
+    val showTitle by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
+    // Nel pannello destro del tablet la barra è scura: continua la fascia sotto la barra di stato
+    val barColor = if (asPane) Brand.Night else MaterialTheme.colorScheme.background
+    val barContent = if (asPane) Color.White else MaterialTheme.colorScheme.onSurface
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    if (showTitle && device != null) {
+                        Text(device.displayName(), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         if (asPane) Icon(Icons.Filled.Close, stringResource(R.string.action_close))
@@ -132,7 +148,12 @@ fun DeviceDetailScreen(
                         IconButton(onClick = { renaming = true }) { Icon(Icons.Filled.Edit, stringResource(R.string.action_rename)) }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = barColor,
+                    titleContentColor = barContent,
+                    navigationIconContentColor = barContent,
+                    actionIconContentColor = barContent,
+                ),
             )
         },
         // Banner pubblicitario solo qui, in fondo alla scheda (nella versione "foss" non c'è)
@@ -140,32 +161,47 @@ fun DeviceDetailScreen(
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         if (detail == null || device == null) return@Scaffold
-        LazyColumn(
-            // Su schermi larghi le schede non si stirano oltre una larghezza leggibile
-            modifier = Modifier.fillMaxSize().padding(padding).wrapContentWidth(Alignment.Start).widthIn(max = 720.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            item { Header(detail) }
-
-            item {
-                QuickActions(
-                    ip = device.lastIp,
-                    ports = ports,
-                    onOpenWeb = { url -> PortActions.open(context, PortAction(R.string.port_open_browser, url))?.let { toast(it) } },
-                    onCopyIp = { copy(device.lastIp) },
-                )
+        val quick = @Composable {
+            QuickActions(
+                ip = device.lastIp,
+                ports = ports,
+                onOpenWeb = { url -> PortActions.open(context, PortAction(R.string.port_open_browser, url))?.let { toast(it) } },
+                onCopyIp = { copy(device.lastIp) },
+            )
+        }
+        val portsCard = @Composable {
+            PortsCard(device.lastIp, ports, onScanPorts, onStopPorts) { action ->
+                PortActions.open(context, action)?.let { toast(it) }
             }
-
-            item {
-                PortsCard(device.lastIp, ports, onScanPorts, onStopPorts) { action ->
-                    PortActions.open(context, action)?.let { toast(it) }
+        }
+        BoxWithConstraints(Modifier.fillMaxSize().padding(padding)) {
+            // Pannello largo (tablet in orizzontale): due colonne, porte e ping | dettagli
+            val twoColumns = maxWidth >= 840.dp
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize().wrapContentWidth(Alignment.Start)
+                    .widthIn(max = if (twoColumns) 1200.dp else 720.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item { Header(detail) }
+                item { quick() }
+                if (twoColumns) {
+                    item {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                portsCard()
+                                if (!device.isSelf) PingChart(ping)
+                            }
+                            Column(Modifier.weight(1f)) { InfoCard(detail, onCopy = ::copy) }
+                        }
+                    }
+                } else {
+                    item { portsCard() }
+                    if (!device.isSelf) item { PingChart(ping) }
+                    item { InfoCard(detail, onCopy = ::copy) }
                 }
             }
-
-            if (!device.isSelf) item { PingChart(ping) }
-
-            item { InfoCard(detail, onCopy = ::copy) }
         }
     }
 

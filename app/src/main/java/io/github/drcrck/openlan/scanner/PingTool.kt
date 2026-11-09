@@ -42,6 +42,9 @@ data class PingStats(
     val avg: Double? get() = if (ok.isEmpty()) null else ok.average()
     val lossPercent: Double get() = if (sent == 0) 0.0 else (sent - received) * 100.0 / sent
 
+    /** Jitter: variazione media tra due risposte consecutive (quanto è stabile la latenza). */
+    val jitter: Double? get() = ok.zipWithNext { x, y -> kotlin.math.abs(y - x) }.takeIf { it.isNotEmpty() }?.average()
+
     fun add(rtt: Double?): PingStats = copy(samples = (samples + rtt).takeLast(WINDOW))
 
     companion object {

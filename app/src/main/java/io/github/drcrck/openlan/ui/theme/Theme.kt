@@ -30,6 +30,9 @@ object Brand {
     /** Testo secondario sull'intestazione: opaco, contrasto ≥ 4.5:1 su tutta la sfumatura. */
     val HeroText = Color(0xFFD3E2EA)
 
+    /** Intestazione della lista: verticale, così la barra dei filtri sotto (Deep) continua senza stacco. */
+    val heroVertical = Brush.verticalGradient(listOf(Night, Deep))
+
     /** Sfondo dell'intestazione, uguale in tema chiaro e scuro. */
     val heroGradient = Brush.linearGradient(listOf(Night, Deep, Color(0xFF0C5C5E)))
 }
