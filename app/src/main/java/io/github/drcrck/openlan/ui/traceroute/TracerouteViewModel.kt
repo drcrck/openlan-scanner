@@ -20,6 +20,10 @@ data class TracerouteState(
     val hops: List<Hop> = emptyList(),
     val error: UiMessage? = null,
     val finished: Boolean = false,
+    /** Salti finali senza risposta nascosti (dopo l'ultimo che ha risposto). */
+    val hiddenSilent: Int = 0,
+    /** Nessun salto ha risposto: la rete o Android filtrano le risposte ICMP. */
+    val allSilent: Boolean = false,
 )
 
 class TracerouteViewModel(private val container: AppContainer) : ViewModel() {
@@ -35,10 +39,18 @@ class TracerouteViewModel(private val container: AppContainer) : ViewModel() {
         if (target.isEmpty()) return
         job?.cancel()
         job = viewModelScope.launch {
-            _state.update { it.copy(running = true, hops = emptyList(), error = null, finished = false) }
+            _state.update { TracerouteState(target = it.target, running = true) }
             try {
                 val hops = container.traceroute.trace(target) { h -> _state.update { it.copy(hops = h) } }
-                _state.update { it.copy(running = false, hops = hops, finished = true) }
+                // Onestà prima di tutto: niente righe "* nessuna risposta" a vuoto
+                val lastAnswer = hops.indexOfLast { it.ip != null }
+                val shown = if (lastAnswer < 0) emptyList() else hops.subList(0, lastAnswer + 1)
+                _state.update {
+                    it.copy(
+                        running = false, hops = shown, finished = true,
+                        hiddenSilent = hops.size - shown.size, allSilent = lastAnswer < 0,
+                    )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IllegalArgumentException) {

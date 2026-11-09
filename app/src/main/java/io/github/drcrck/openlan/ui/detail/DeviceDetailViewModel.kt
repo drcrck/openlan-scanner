@@ -13,7 +13,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import io.github.drcrck.openlan.scanner.PortKind
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -33,6 +34,9 @@ data class PortScanState(
     val finished: Boolean = false,
     val extended: Boolean = false,
     val durationMs: Long? = null,
+    /** true = porte ricordate da una scansione precedente (non ancora rifatta in questa sessione). */
+    val remembered: Boolean = false,
+    val scannedAt: Long? = null,
 )
 
 data class DeviceDetail(
@@ -83,7 +87,20 @@ class DeviceDetailViewModel(private val container: AppContainer, deviceId: Long)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), PingStats())
 
     private val _ports = MutableStateFlow(PortScanState())
-    val ports: StateFlow<PortScanState> = _ports.asStateFlow()
+
+    /** Porte della scansione in corso/appena fatta; altrimenti quelle ricordate dall'ultima volta. */
+    val ports: StateFlow<PortScanState> = combine(_ports, detail) { p, d ->
+        val saved = d?.device?.openPorts
+        if (p.running || p.finished || saved == null) p
+        else p.copy(
+            open = saved.split(",").mapNotNull { it.trim().toIntOrNull() }.map { port ->
+                val k = KnownPorts.byPort[port]
+                OpenPort(port, k?.name, isHttp = k?.kind == PortKind.HTTP, isTls = k?.kind == PortKind.HTTPS)
+            },
+            remembered = true,
+            scannedAt = d.device.portsScannedAt,
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PortScanState())
     private var job: Job? = null
 
     fun scanPorts(extended: Boolean) {
@@ -99,7 +116,9 @@ class DeviceDetailViewModel(private val container: AppContainer, deviceId: Long)
             _ports.value = PortScanState(
                 done = list.size, total = list.size, open = open, finished = true,
                 extended = extended, durationMs = System.currentTimeMillis() - start,
+                scannedAt = System.currentTimeMillis(),
             )
+            detail.value?.device?.id?.let { id -> container.deviceRepository.savePorts(id, open.map { it.port }) }
         }
     }
 

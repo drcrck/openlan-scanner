@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -69,12 +70,12 @@ fun InfoRow(
     note: String? = null,
     onCopy: ((String) -> Unit)? = null,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().heightIn(min = 32.dp)) {
         Text(
             label,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(112.dp),
+            modifier = Modifier.width(120.dp).padding(end = 12.dp),
         )
         Column(Modifier.weight(1f)) {
             Text(value, style = MaterialTheme.typography.bodyMedium, fontFamily = if (mono) Mono else null)
@@ -83,7 +84,7 @@ fun InfoRow(
             }
         }
         if (onCopy != null) {
-            IconButton(onClick = { onCopy(value) }, modifier = Modifier.size(32.dp)) {
+            IconButton(onClick = { onCopy(value) }) {
                 Icon(
                     Icons.Filled.ContentCopy, stringResource(R.string.action_copy),
                     modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant,

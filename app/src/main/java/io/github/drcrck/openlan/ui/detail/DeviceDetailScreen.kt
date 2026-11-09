@@ -12,15 +12,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.DesktopWindows
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
@@ -62,7 +67,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.drcrck.openlan.R
 import io.github.drcrck.openlan.ads.Ads
@@ -85,6 +90,10 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
 
+/**
+ * Scheda dispositivo, nell'ordine in cui lavora un tecnico: chi è → azioni rapide → porte → ping → dettagli.
+ * [asPane] = mostrata nel pannello destro su schermo largo (icona di chiusura invece della freccia).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceDetailScreen(
@@ -95,6 +104,7 @@ fun DeviceDetailScreen(
     onScanPorts: (extended: Boolean) -> Unit,
     onStopPorts: () -> Unit,
     onRename: (String) -> Unit,
+    asPane: Boolean = false,
 ) {
     val device = detail?.device
     val context = LocalContext.current
@@ -102,13 +112,20 @@ fun DeviceDetailScreen(
     val scope = rememberCoroutineScope()
     var renaming by remember { mutableStateOf(false) }
     fun toast(msg: String) = scope.launch { snackbar.showSnackbar(msg) }
+    fun copy(text: String) {
+        PortActions.copy(context, text)
+        toast(context.getString(R.string.msg_copied, text))
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back)) }
+                    IconButton(onClick = onBack) {
+                        if (asPane) Icon(Icons.Filled.Close, stringResource(R.string.action_close))
+                        else Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back))
+                    }
                 },
                 actions = {
                     if (device != null) {
@@ -124,26 +141,31 @@ fun DeviceDetailScreen(
     ) { padding ->
         if (detail == null || device == null) return@Scaffold
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            // Su schermi larghi le schede non si stirano oltre una larghezza leggibile
+            modifier = Modifier.fillMaxSize().padding(padding).wrapContentWidth(Alignment.Start).widthIn(max = 720.dp),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item { Header(detail) }
 
             item {
-                InfoCard(detail, onCopy = { text ->
-                    PortActions.copy(context, text)
-                    toast(context.getString(R.string.msg_copied, text))
-                })
+                QuickActions(
+                    ip = device.lastIp,
+                    ports = ports,
+                    onOpenWeb = { url -> PortActions.open(context, PortAction(R.string.port_open_browser, url))?.let { toast(it) } },
+                    onCopyIp = { copy(device.lastIp) },
+                )
             }
-
-            if (!device.isSelf) item { PingChart(ping) }
 
             item {
                 PortsCard(device.lastIp, ports, onScanPorts, onStopPorts) { action ->
                     PortActions.open(context, action)?.let { toast(it) }
                 }
             }
+
+            if (!device.isSelf) item { PingChart(ping) }
+
+            item { InfoCard(detail, onCopy = ::copy) }
         }
     }
 
@@ -157,25 +179,56 @@ fun DeviceDetailScreen(
     }
 }
 
+/** Intestazione compatta: icona accanto al nome, stato e ruoli sotto. */
 @Composable
 private fun Header(detail: DeviceDetail) {
     val d = detail.device
-    Column(
-        Modifier.fillMaxWidth().padding(bottom = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        TypeAvatar(d.type, online = null, size = 76.dp)
-        Spacer(Modifier.height(12.dp))
-        Text(d.displayName(), style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-        Text(
-            stringResource(d.type.labelRes),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(10.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            StatusPill(detail.online)
-            RoleTags(detail.tags)
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        TypeAvatar(d.type, online = null, size = 56.dp)
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(d.displayName(), style = MaterialTheme.typography.headlineSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(
+                stringResource(d.type.labelRes),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatusPill(detail.online)
+                RoleTags(detail.tags)
+            }
+        }
+    }
+}
+
+/**
+ * Le azioni che un tecnico fa per prime: aprire l'interfaccia web e copiare l'IP (le porte sono subito sotto).
+ * "Apri web" usa HTTPS se l'ultima scansione porte l'ha trovata, altrimenti prova HTTP.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun QuickActions(
+    ip: String,
+    ports: PortScanState,
+    onOpenWeb: (String) -> Unit,
+    onCopyIp: () -> Unit,
+) {
+    val web = ports.open.firstOrNull { it.isTls || KnownPorts.byPort[it.port]?.kind == PortKind.HTTPS }
+        ?.let { "https://$ip" + if (it.port == 443) "/" else ":${it.port}/" }
+        ?: ports.open.firstOrNull { it.isHttp || KnownPorts.byPort[it.port]?.kind == PortKind.HTTP }
+            ?.let { "http://$ip" + if (it.port == 80) "/" else ":${it.port}/" }
+        ?: "http://$ip/"
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        FilledTonalButton(onClick = { onOpenWeb(web) }) {
+            Icon(Icons.Filled.Language, null, Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.action_open_web))
+        }
+        OutlinedButton(onClick = onCopyIp) {
+            Icon(Icons.Filled.ContentCopy, null, Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.action_copy_ip))
         }
     }
 }
@@ -196,8 +249,14 @@ private fun InfoCard(detail: DeviceDetail, onCopy: (String) -> Unit) {
         d.mdnsName?.let { InfoRow("mDNS", "$it.local", mono = true) }
         d.hostname?.let { InfoRow("DNS", it, mono = true) }
         val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-        InfoRow(stringResource(R.string.field_first_seen), df.format(Date(d.firstSeen)))
-        InfoRow(stringResource(R.string.field_last_seen), df.format(Date(d.lastSeen)))
+        val first = df.format(Date(d.firstSeen))
+        val last = df.format(Date(d.lastSeen))
+        // Stessa data due volte non aggiunge nulla: una riga sola
+        if (first == last) InfoRow(stringResource(R.string.field_seen), first)
+        else {
+            InfoRow(stringResource(R.string.field_first_seen), first)
+            InfoRow(stringResource(R.string.field_last_seen), last)
+        }
         detail.matchedBy?.let { InfoRow(stringResource(R.string.field_matched_by), stringResource(matchLabel(it))) }
 
         val services = d.services?.split(",")?.filter { it.isNotBlank() }.orEmpty()
@@ -257,19 +316,18 @@ private fun PortsCard(
             )
             OutlinedButton(onClick = onStop) { Text(stringResource(R.string.action_stop)) }
         } else {
-            if (!ports.finished) {
-                Text(
-                    stringResource(R.string.ports_intro),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { onScan(false) }) { Text(stringResource(R.string.ports_common)) }
-                FilledTonalButton(onClick = { onScan(true) }) { Text(stringResource(R.string.ports_extended)) }
-            }
-            if (ports.finished) {
-                Text(
+            when {
+                ports.remembered -> {
+                    val at = ports.scannedAt?.let {
+                        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(it))
+                    } ?: "?"
+                    Text(
+                        stringResource(R.string.ports_remembered, at),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                ports.finished -> Text(
                     stringResource(
                         R.string.ports_result, ports.open.size, ports.total,
                         String.format(java.util.Locale.getDefault(), "%.1f", (ports.durationMs ?: 0) / 1000.0),
@@ -277,9 +335,20 @@ private fun PortsCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                if (ports.open.isEmpty()) {
-                    Text(stringResource(R.string.ports_none), style = MaterialTheme.typography.bodyMedium)
+                else -> Text(
+                    stringResource(R.string.ports_intro),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { onScan(false) }) {
+                    Text(stringResource(if (ports.remembered || ports.finished) R.string.ports_rescan else R.string.ports_common))
                 }
+                FilledTonalButton(onClick = { onScan(true) }) { Text(stringResource(R.string.ports_extended)) }
+            }
+            if (ports.finished && ports.open.isEmpty()) {
+                Text(stringResource(R.string.ports_none), style = MaterialTheme.typography.bodyMedium)
             }
         }
 
@@ -304,7 +373,7 @@ private fun portIcon(p: OpenPort): ImageVector = when (KnownPorts.byPort[p.port]
 @Composable
 private fun PortRow(ip: String, p: OpenPort, onAction: (PortAction) -> Unit) {
     val actions = PortActions.forPort(ip, p)
-    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,

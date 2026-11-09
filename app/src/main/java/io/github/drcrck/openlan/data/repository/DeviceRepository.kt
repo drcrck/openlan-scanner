@@ -52,6 +52,11 @@ class DeviceRepository(private val db: AppDatabase) {
 
     fun observeDevice(id: Long): Flow<DeviceEntity?> = deviceDao.observe(id)
 
+    /** Ricorda le porte aperte trovate, così la scheda le mostra subito alla prossima apertura. */
+    suspend fun savePorts(deviceId: Long, ports: List<Int>) {
+        deviceDao.savePorts(deviceId, ports.sorted().joinToString(","), System.currentTimeMillis())
+    }
+
     suspend fun rename(deviceId: Long, name: String?) {
         deviceDao.rename(deviceId, name?.trim()?.takeIf { it.isNotEmpty() })
     }

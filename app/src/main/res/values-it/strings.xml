@@ -10,7 +10,6 @@
     <string name="action_share">Condividi</string>
     <string name="action_start">Avvia</string>
     <string name="action_stop">Interrompi</string>
-    <string name="scanning">Scansione…</string>
     <string name="starting">Avvio…</string>
 
     <!-- Schermate -->
@@ -19,21 +18,15 @@
     <string name="traceroute">Traceroute</string>
 
     <!-- Lista dispositivi -->
-    <string name="net_wifi">Rete Wi-Fi</string>
-    <string name="net_wired">Rete cablata</string>
     <string name="no_network">Nessuna rete locale</string>
     <string name="no_network_hint">Collegati a una rete Wi-Fi per scansionarla.</string>
     <string name="ssid_unknown">Wi-Fi (nome nascosto)</string>
     <string name="ssid_permission_hint">Per vedere il nome della rete concedi il permesso posizione e attiva la localizzazione.</string>
-    <string name="stat_online">online</string>
-    <string name="stat_known">conosciuti</string>
-    <string name="stat_last_scan">ultima scansione</string>
     <string name="access_point">Access point</string>
     <string name="signal">Segnale</string>
     <string name="range_limited">La rete è più grande di /22: è stato scansionato solo il /24 del telefono.</string>
     <string name="empty_title">Ancora nessun dispositivo</string>
     <string name="empty_body">Tocca «Scansiona» per scoprire cosa è collegato a questa rete.</string>
-    <string name="group_online">Online</string>
     <string name="group_offline">Non visti nell\'ultima scansione</string>
     <string name="this_phone">Questo telefono</string>
     <string name="role_self">Questo dispositivo</string>
@@ -42,9 +35,9 @@
     <string name="phase_discovery">Ricerca dispositivi</string>
     <string name="phase_services">Servizi mDNS / UPnP</string>
     <string name="phase_names">Lettura nomi</string>
-    <string name="msg_no_network">Nessuna rete Wi-Fi: collegati a una rete e riprova.</string>
+    <string name="msg_no_network">Nessuna rete locale: collegati al Wi-Fi o alla rete cablata e riprova.</string>
     <string name="msg_scan_done">Trovati %1$d dispositivi (%2$d con MAC)</string>
-    <string name="msg_scan_error">Errore durante la scansione: %1$s</string>
+    <string name="msg_scan_error">La scansione non è riuscita. Apri Diagnostica (menu ⋮) per i dettagli.</string>
     <string name="msg_error">Errore: %1$s</string>
 
     <!-- Tipi di dispositivo -->
@@ -73,8 +66,8 @@
     <string name="field_brand">Marca</string>
     <string name="field_model">Modello</string>
     <string name="field_friendly">Nome UPnP/mDNS</string>
-    <string name="field_first_seen">Visto la prima volta</string>
-    <string name="field_last_seen">Visto l\'ultima volta</string>
+    <string name="field_first_seen">Prima volta</string>
+    <string name="field_last_seen">Ultima volta</string>
     <string name="field_matched_by">Riconosciuto da</string>
     <string name="field_services">Servizi pubblicati</string>
     <string name="match_self">questo telefono</string>
@@ -84,7 +77,7 @@
     <string name="match_mdns">nome mDNS</string>
     <string name="match_hostname">nome DNS</string>
     <string name="match_ip">solo IP (nessun altro identificativo: se il router riassegna l\'indirizzo potrebbe essere un altro dispositivo)</string>
-    <string name="match_new">nuovo dispositivo</string>
+    <string name="match_new">prima volta su questa rete</string>
     <string name="msg_copied">Copiato: %1$s</string>
     <string name="rename_title">Rinomina dispositivo</string>
     <string name="rename_hint">Lascia vuoto per usare il nome rilevato</string>
@@ -92,7 +85,6 @@
     <!-- Ping -->
     <string name="ping_starting">avvio…</string>
     <string name="ping_lost">perso</string>
-    <string name="ping_window">ultimi %1$d s</string>
     <string name="ping_avg">medio</string>
     <string name="ping_loss">persi</string>
 
@@ -149,4 +141,50 @@
     <string name="link_ad_consent">Scelte privacy pubblicità</string>
     <string name="about_credits">Riconoscimenti</string>
     <string name="credits_body">I nomi dei produttori vengono dal registro pubblico IEEE, tramite il file manuf di Wireshark. Font: Space Grotesk e JetBrains Mono (SIL Open Font License). Icone: Material Icons (Apache 2.0).</string>
+
+    <!-- Lista: ricerca, filtri, gruppi; dettaglio e traceroute (v1.1) -->
+    <string name="action_close">Chiudi</string>
+    <string name="action_collapse">Comprimi</string>
+    <string name="action_expand">Espandi</string>
+    <string name="action_copy_ip">Copia IP</string>
+    <string name="action_open_web">Apri web</string>
+    <string name="action_stop_scan">Interrompi</string>
+    <string name="more_options">Altre opzioni</string>
+    <string name="badge_new">NUOVO</string>
+    <string name="detail_placeholder">Seleziona un dispositivo per vedere dettagli, porte e ping in tempo reale</string>
+    <string name="field_seen">Visto</string>
+    <string name="filter_infra">Infrastruttura</string>
+    <string name="filter_new">Nuovi</string>
+    <string name="filter_server">Server</string>
+    <string name="filter_nas">NAS</string>
+    <string name="filter_computer">Computer</string>
+    <string name="filter_printer">Stampanti</string>
+    <string name="filter_media">TV e media</string>
+    <string name="filter_mobile">Telefoni</string>
+    <string name="filter_camera">Videocamere</string>
+    <string name="filter_iot">IoT</string>
+    <string name="filter_unidentified">Non identificati</string>
+    <string name="filter_offline">Offline</string>
+    <string name="filter_results">%1$d risultati</string>
+    <string name="filter_clear">Azzera</string>
+    <string name="filter_no_results">Nessun risultato. Prova con l\'IP, un nome, il produttore o parte del MAC.</string>
+    <string name="group_infra">Infrastruttura</string>
+    <string name="group_identified">Dispositivi identificati</string>
+    <string name="group_unidentified">Host non identificati</string>
+    <string name="group_unidentified_hint">Rispondono in rete ma non annunciano un nome</string>
+    <string name="msg_scan_stopped">Scansione interrotta</string>
+    <string name="msg_scan_error_network">La rete ha smesso di rispondere durante la scansione. Controlla la connessione Wi-Fi e riprova.</string>
+    <string name="never_scanned">Non ancora scansionata</string>
+    <string name="no_identity">nessun nome o produttore</string>
+    <string name="ping_window_stats">ultimi %1$d s · statistiche su questa finestra</string>
+    <string name="ports_remembered">Trovate nella scansione del %1$s</string>
+    <string name="ports_rescan">Riscansiona</string>
+    <string name="scanned_at">Scansionata alle %1$s · %2$s</string>
+    <string name="search_hint">Cerca IP, nome, produttore, MAC</string>
+    <string name="search_clear">Cancella ricerca</string>
+    <string name="trace_hidden_silent">Altri %1$d salti senza risposta (nascosti)</string>
+    <string name="trace_silent_title">Nessun salto ha risposto</string>
+    <string name="trace_silent_body">I router su questo percorso non hanno risposto alle sonde TTL: la rete potrebbe filtrare l\'ICMP, oppure Android o l\'emulatore bloccano le risposte. Qui lo strumento non può mostrare il percorso: prova un\'altra rete o destinazione.</string>
+    <string name="network_details">Rete</string>
+    <string name="just_now">adesso</string>
 </resources>
