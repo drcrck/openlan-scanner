@@ -1,0 +1,20 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Segreti di rilascio: MAI su GitHub
+keystore.properties
+ads.properties
+/keystore
+*.jks
+*.keystore
+/release

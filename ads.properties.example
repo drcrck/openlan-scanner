@@ -1,0 +1,3 @@
+# Copia in ads.properties con i tuoi ID AdMob (senza file si usano gli ID di test di Google)
+admob.appId=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY
+admob.bannerId=ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ

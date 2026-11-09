@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Icona OpenLAN Scanner: un nodo centrale (ambra) collegato a quattro dispositivi,
+  dentro l'anello del radar con il fascio di scansione.
+  Area sicura dell'adaptive icon: cerchio di 66dp al centro di 108dp.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Fascio di scansione -->
+    <path
+        android:fillColor="#405EEAD4"
+        android:pathData="M54,54 L54,25 A29,29 0 0,1 79.1,39.5 Z" />
+    <!-- Anello del radar -->
+    <path
+        android:strokeColor="#995EEAD4"
+        android:strokeWidth="2.2"
+        android:fillColor="#00000000"
+        android:pathData="M54,25a29,29 0 1,1 0,58a29,29 0 1,1 0,-58z" />
+    <!-- Collegamenti -->
+    <path
+        android:strokeColor="#E6FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,54L38,42M54,54L70,42M54,54L38,68M54,54L70,68" />
+    <!-- Dispositivi -->
+    <path
+        android:fillColor="#5EEAD4"
+        android:pathData="M38,36.5a5.5,5.5 0 1,1 0,11a5.5,5.5 0 1,1 0,-11z M70,36.5a5.5,5.5 0 1,1 0,11a5.5,5.5 0 1,1 0,-11z M38,62.5a5.5,5.5 0 1,1 0,11a5.5,5.5 0 1,1 0,-11z M70,62.5a5.5,5.5 0 1,1 0,11a5.5,5.5 0 1,1 0,-11z" />
+    <!-- Nodo centrale -->
+    <path
+        android:fillColor="#FFC75F"
+        android:pathData="M54,46a8,8 0 1,1 0,16a8,8 0 1,1 0,-16z" />
+</vector>

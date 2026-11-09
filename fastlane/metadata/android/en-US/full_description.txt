@@ -1,0 +1,30 @@
+<b>OpenLAN Scanner</b> shows you who is on your network – and it is 100% open source.
+
+Every line of code is public on GitHub: you can read exactly what the app does. No account, no cloud, no analytics. Your scan results never leave your phone.
+
+<b>🔍 Discover every device</b>
+• Fast scan of your Wi-Fi network (ping + TCP probe)
+• Names from NetBIOS, mDNS/Bonjour, UPnP and DNS
+• Vendor from the official IEEE registry, fully offline
+• Automatic device type: router, PC, phone, printer, TV, NAS, server, camera, smart home…
+• Tags for this device, gateway, DNS and DHCP servers
+• Devices remembered per network: see at a glance who is online
+
+<b>🛠 Network tools</b>
+• Port scan (common ports or 1–1024) and one-tap open: web page, SSH, shared folders, remote desktop, VNC, video streams
+• Live ping chart with min / avg / max / packet loss
+• Traceroute: see where your network ends, detect provider CGNAT, find the first public node
+• Diagnostics log to understand (and report) what each protocol found
+
+<b>🔓 Open source, for real</b>
+• GPL-3.0 license – source code: github.com/drcrck/openlan-scanner
+• Build it yourself without any ads or Google libraries
+• This Google Play version shows just one small banner, only in the device page, to support development
+
+<b>About MAC addresses</b>
+Since Android 10 apps cannot read the system ARP table. OpenLAN Scanner gets MAC addresses from what devices announce (NetBIOS, mDNS, UPnP) and always tells you the source. Devices that announce nothing are recognized by name instead.
+
+<b>Permissions</b>
+Location is requested only because Android requires it to read the Wi-Fi name. The app never reads your position.
+
+Available in English and Italian, with light and dark theme.
