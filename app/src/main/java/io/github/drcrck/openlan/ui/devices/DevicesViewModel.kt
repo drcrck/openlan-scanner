@@ -52,18 +52,18 @@ data class DeviceRow(
 
 /** Filtri rapidi della lista (chip del riepilogo). */
 enum class ListFilter {
-    INFRA, NEW, SERVER, NAS, COMPUTER, PRINTER, MEDIA, MOBILE, CAMERA, IOT, UNIDENTIFIED, OFFLINE;
+    INFRA, NEW, SERVER, NAS, COMPUTER, PRINTER, MEDIA, MOBILE, CAMERA, IOT, OTHER, UNIDENTIFIED, OFFLINE;
 
     fun matches(r: DeviceRow): Boolean = when (this) {
         INFRA -> r.isInfra
         NEW -> r.isNew
         OFFLINE -> !r.online
         UNIDENTIFIED -> r.online && !r.identified
-        else -> r.online && r.identified && categoryOf(r.type) == this
+        else -> r.online && !r.isInfra && r.identified && categoryOf(r.type) == this
     }
 
     companion object {
-        fun categoryOf(t: DeviceType): ListFilter? = when (t) {
+        fun categoryOf(t: DeviceType): ListFilter = when (t) {
             DeviceType.SERVER -> SERVER
             DeviceType.NAS -> NAS
             DeviceType.COMPUTER -> COMPUTER
@@ -72,18 +72,19 @@ enum class ListFilter {
             DeviceType.PHONE, DeviceType.TABLET -> MOBILE
             DeviceType.CAMERA -> CAMERA
             DeviceType.IOT -> IOT
-            DeviceType.ROUTER, DeviceType.UNKNOWN -> null
+            DeviceType.ROUTER, DeviceType.UNKNOWN -> OTHER
         }
     }
 }
 
-/** Gruppi della lista quando non c'è né ricerca né filtro. */
-data class DeviceSections(
-    val infra: List<DeviceRow> = emptyList(),
-    val identified: List<DeviceRow> = emptyList(),
-    val unidentified: List<DeviceRow> = emptyList(),
-    val offline: List<DeviceRow> = emptyList(),
-)
+/** Come mostrare la lista: raggruppata per tipo oppure tutta in fila per indirizzo IP. */
+enum class ViewMode { GROUPS, IP }
+
+/** Un gruppo della vista raggruppata; usa le stesse categorie dei chip. */
+data class DeviceGroup(val kind: ListFilter, val rows: List<DeviceRow>) {
+    /** Gruppi chiusi di default: rispondono ma dicono poco, o non si vedono da tempo. */
+    val collapsedByDefault: Boolean get() = kind == ListFilter.UNIDENTIFIED || kind == ListFilter.OFFLINE
+}
 
 data class DevicesUiState(
     val network: NetworkInfo? = null,
@@ -99,12 +100,15 @@ data class DevicesUiState(
     val filter: ListFilter? = null,
     /** Conteggi per i chip del riepilogo (solo quelli > 0). */
     val counts: Map<ListFilter, Int> = emptyMap(),
-    val sections: DeviceSections = DeviceSections(),
-    /** Risultati piatti quando ricerca o filtro sono attivi. */
-    val results: List<DeviceRow>? = null,
+    val mode: ViewMode = ViewMode.GROUPS,
+    /** Vista a gruppi (vuota se c'è un filtro/ricerca o se la vista è per IP). */
+    val groups: List<DeviceGroup> = emptyList(),
+    /** Lista piatta ordinata per IP: vista "IP", oppure risultati di filtro/ricerca. */
+    val flat: List<DeviceRow>? = null,
+    val filtering: Boolean = false,
 )
 
-private data class ListState(val query: String = "", val filter: ListFilter? = null)
+private data class ListState(val query: String = "", val filter: ListFilter? = null, val mode: ViewMode = ViewMode.GROUPS)
 
 private data class ScanState(
     val scanning: Boolean = false,
@@ -119,7 +123,10 @@ class DevicesViewModel(private val container: AppContainer) : ViewModel() {
     private val network = MutableStateFlow<NetworkInfo?>(null)
     private val apVendor = network.map { n -> n?.bssid?.let { container.oui.vendorFor(it) } }
     private val scanState = MutableStateFlow(ScanState())
-    private val listState = MutableStateFlow(ListState())
+    private val prefs = container.context.getSharedPreferences("ui", android.content.Context.MODE_PRIVATE)
+    private val listState = MutableStateFlow(
+        ListState(mode = runCatching { ViewMode.valueOf(prefs.getString("view_mode", null) ?: "") }.getOrDefault(ViewMode.GROUPS))
+    )
     private var scanJob: Job? = null
 
     private val deviceList = network.flatMapLatest { n ->
@@ -148,21 +155,15 @@ class DevicesViewModel(private val container: AppContainer) : ViewModel() {
                 query = ls.query,
                 filter = ls.filter,
                 counts = counts,
-                sections = if (filtering) DeviceSections() else DeviceSections(
-                    // Infrastruttura: gateway, poi DNS/DHCP, poi questo telefono
-                    infra = rows.filter { it.isInfra }.sortedBy { r ->
-                        when {
-                            Role.GATEWAY in r.tags -> 0
-                            Role.DNS in r.tags || Role.DHCP in r.tags -> 1
-                            else -> 2
-                        }
-                    },
-                    identified = rows.filter { it.online && !it.isInfra && it.identified },
-                    unidentified = rows.filter { it.online && !it.isInfra && !it.identified },
-                    offline = rows.filter { !it.online },
-                ),
-                results = if (!filtering) null else rows.filter { r ->
-                    (ls.filter == null || ls.filter.matches(r)) && (q.isEmpty() || r.matchesQuery(q))
+                mode = ls.mode,
+                filtering = filtering,
+                groups = if (filtering || ls.mode == ViewMode.IP) emptyList() else buildGroups(rows),
+                flat = when {
+                    filtering -> rows.filter { r ->
+                        (ls.filter == null || ls.filter.matches(r)) && (q.isEmpty() || r.matchesQuery(q))
+                    }.sortedBy { Ipv4.sortKey(it.ip) }
+                    ls.mode == ViewMode.IP -> rows.sortedBy { Ipv4.sortKey(it.ip) }
+                    else -> null
                 },
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DevicesUiState())
@@ -172,7 +173,32 @@ class DevicesViewModel(private val container: AppContainer) : ViewModel() {
     /** Toccare di nuovo lo stesso chip lo toglie. */
     fun toggleFilter(f: ListFilter) = listState.update { it.copy(filter = if (it.filter == f) null else f) }
 
-    fun clearFilters() = listState.update { ListState() }
+    fun clearFilters() = listState.update { it.copy(query = "", filter = null) }
+
+    fun setMode(m: ViewMode) {
+        prefs.edit().putString("view_mode", m.name).apply()
+        listState.update { it.copy(mode = m) }
+    }
+
+    /**
+     * Gruppi per tipo, nell'ordine utile a un tecnico: infrastruttura, server e NAS, PC, periferiche…
+     * In fondo gli host senza nome e quelli non visti.
+     */
+    private fun buildGroups(rows: List<DeviceRow>): List<DeviceGroup> {
+        val infra = rows.filter { it.isInfra }.sortedBy { r ->
+            when {
+                Role.GATEWAY in r.tags -> 0
+                Role.DNS in r.tags || Role.DHCP in r.tags -> 1
+                else -> 2
+            }
+        }
+        val order = listOf(
+            ListFilter.SERVER, ListFilter.NAS, ListFilter.COMPUTER, ListFilter.PRINTER, ListFilter.MEDIA,
+            ListFilter.MOBILE, ListFilter.CAMERA, ListFilter.IOT, ListFilter.OTHER, ListFilter.UNIDENTIFIED, ListFilter.OFFLINE,
+        )
+        return (listOf(DeviceGroup(ListFilter.INFRA, infra)) + order.map { f -> DeviceGroup(f, rows.filter { f.matches(it) }) })
+            .filter { it.rows.isNotEmpty() }
+    }
 
     fun stopScan() {
         scanJob?.cancel()

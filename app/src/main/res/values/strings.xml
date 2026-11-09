@@ -29,7 +29,6 @@
     <string name="range_limited">The network is larger than /22: only the phone\'s /24 was scanned.</string>
     <string name="empty_title">No devices yet</string>
     <string name="empty_body">Tap “Scan” to discover what is connected to this network.</string>
-    <string name="group_offline">Not seen in last scan</string>
     <string name="this_phone">This phone</string>
     <string name="role_self">This device</string>
     <string name="status_online">Online</string>
@@ -146,8 +145,6 @@
 
     <!-- Lista: ricerca, filtri, gruppi; dettaglio e traceroute (v1.1) -->
     <string name="action_close">Close</string>
-    <string name="action_collapse">Collapse</string>
-    <string name="action_expand">Expand</string>
     <string name="action_copy_ip">Copy IP</string>
     <string name="action_open_web">Open web</string>
     <string name="action_stop_scan">Stop</string>
@@ -167,12 +164,8 @@
     <string name="filter_iot">IoT</string>
     <string name="filter_unidentified">Unidentified</string>
     <string name="filter_offline">Offline</string>
-    <string name="filter_results">%1$d results</string>
     <string name="filter_clear">Clear</string>
     <string name="filter_no_results">Nothing matches. Try the IP, a name, the vendor or part of the MAC.</string>
-    <string name="group_infra">Infrastructure</string>
-    <string name="group_identified">Identified devices</string>
-    <string name="group_unidentified">Unidentified hosts</string>
     <string name="group_unidentified_hint">They answer on the network but announce no name</string>
     <string name="msg_scan_stopped">Scan stopped</string>
     <string name="msg_scan_error_network">The network stopped responding during the scan. Check the Wi-Fi connection and try again.</string>
@@ -182,11 +175,30 @@
     <string name="ports_remembered">Found in the scan of %1$s</string>
     <string name="ports_rescan">Scan again</string>
     <string name="scanned_at">Scanned at %1$s · %2$s</string>
-    <string name="search_hint">Search IP, name, vendor, MAC</string>
+    <string name="search_hint">Search IP, name, MAC…</string>
     <string name="search_clear">Clear search</string>
     <string name="trace_hidden_silent">%1$d more hops did not reply (hidden)</string>
     <string name="trace_silent_title">No hop replied</string>
-    <string name="trace_silent_body">Routers on this path did not answer the TTL probes: the network may filter ICMP, or Android/the emulator may block the replies. The tool can\'t show the route here; try another network or destination.</string>
+    <string name="trace_silent_body">Routers on this path did not answer the TTL probes: the network may filter ICMP, or this device may not receive the replies. The route can\'t be shown from here; try another network or destination.</string>
     <string name="network_details">Network</string>
     <string name="just_now">just now</string>
+
+    <!-- v1.2: vista Gruppi/IP, accessibilità, ping -->
+    <string name="view_groups">Groups</string>
+    <string name="view_ip">IP</string>
+    <string name="filter_other">Other</string>
+    <string name="filter_new_hint">Devices seen for the first time in the last scan of this network.</string>
+    <string name="state_expanded">expanded</string>
+    <string name="state_collapsed">collapsed</string>
+    <string name="action_copy_mac">Copy MAC</string>
+    <string name="role_self_short">You</string>
+    <string name="ping_summary">Ping now %1$s ms. Last 60 seconds: min %2$s, average %3$s, max %4$s, jitter %5$s ms, %6$s%% lost.</string>
+    <plurals name="filter_results">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
+    <plurals name="devices_by_ip">
+        <item quantity="one">%d device, sorted by IP</item>
+        <item quantity="other">%d devices, sorted by IP</item>
+    </plurals>
 </resources>

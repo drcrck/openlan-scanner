@@ -3,12 +3,16 @@ package io.github.drcrck.openlan.ui.detail
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.NetworkPing
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +35,7 @@ import java.util.Locale
 
 private fun fmt(v: Double?) = v?.let { String.format(Locale.getDefault(), if (it < 10) "%.1f" else "%.0f", it) } ?: "–"
 
+@OptIn(ExperimentalLayoutApi::class)
 /** Grafico del ping in tempo reale: ultimi 60 secondi, perdite segnate in rosso. */
 @Composable
 fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
@@ -41,7 +46,7 @@ fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
     SectionCard(
         modifier,
         title = "Ping",
-        icon = Icons.Filled.NetworkPing,
+        icon = Icons.Filled.Timeline,
         trailing = {
             Text(
                 if (stats.sent == 0) stringResource(R.string.ping_starting)
@@ -57,8 +62,8 @@ fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
 
             // Scala: il massimo visibile arrotondato, almeno 5 ms
             val visibleMax = stats.samples.filterNotNull().maxOrNull() ?: 0.0
-            // Pavimento a 10 ms: la scala non salta tra 5/10/20 ms per variazioni minime
-            val scale = niceCeil(maxOf(visibleMax * 1.15, 10.0))
+            // Pavimento a 1 ms: su una LAN si leggono anche le variazioni sotto il millisecondo
+            val scale = niceCeil(maxOf(visibleMax * 1.15, 1.0))
 
             Row {
                 Text("${fmt(scale)} ms", style = MaterialTheme.typography.labelSmall,
@@ -66,7 +71,11 @@ fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
                 Text(stringResource(R.string.ping_window_stats, PingStats.WINDOW), style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Canvas(Modifier.fillMaxWidth().height(110.dp)) {
+            val summary = stringResource(
+                R.string.ping_summary, fmt(stats.last), fmt(stats.min), fmt(stats.avg), fmt(stats.max), fmt(stats.jitter),
+                String.format(Locale.getDefault(), "%.0f", stats.lossPercent),
+            )
+            Canvas(Modifier.fillMaxWidth().height(110.dp).semantics { contentDescription = summary }) {
                 val w = size.width
                 val h = size.height
                 val step = w / (PingStats.WINDOW - 1)
@@ -93,10 +102,11 @@ fun PingChart(stats: PingStats, modifier: Modifier = Modifier) {
                 path?.let { drawPath(it, line, style = Stroke(width = 4f, cap = StrokeCap.Round, join = StrokeJoin.Round)) }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Stat("min", "${fmt(stats.min)} ms")
                 Stat(stringResource(R.string.ping_avg), "${fmt(stats.avg)} ms")
                 Stat("max", "${fmt(stats.max)} ms")
+                Stat("jitter", "${fmt(stats.jitter)} ms")
                 Stat(stringResource(R.string.ping_loss), String.format(Locale.getDefault(), "%.0f%% (%d/%d)", stats.lossPercent, stats.sent - stats.received, stats.sent))
             }
     }
