@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Azioni -->
+    <string name="action_back">Indietro</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="action_copy">Copia</string>
+    <string name="action_rename">Rinomina</string>
+    <string name="action_save">Salva</string>
+    <string name="action_scan">Scansiona</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_start">Avvia</string>
+    <string name="action_stop">Interrompi</string>
+    <string name="scanning">Scansione…</string>
+    <string name="starting">Avvio…</string>
+
+    <!-- Schermate -->
+    <string name="about">Informazioni</string>
+    <string name="diagnostics">Diagnostica</string>
+    <string name="traceroute">Traceroute</string>
+
+    <!-- Lista dispositivi -->
+    <string name="net_wifi">Rete Wi-Fi</string>
+    <string name="net_wired">Rete cablata</string>
+    <string name="no_network">Nessuna rete locale</string>
+    <string name="no_network_hint">Collegati a una rete Wi-Fi per scansionarla.</string>
+    <string name="ssid_unknown">Wi-Fi (nome nascosto)</string>
+    <string name="ssid_permission_hint">Per vedere il nome della rete concedi il permesso posizione e attiva la localizzazione.</string>
+    <string name="stat_online">online</string>
+    <string name="stat_known">conosciuti</string>
+    <string name="stat_last_scan">ultima scansione</string>
+    <string name="access_point">Access point</string>
+    <string name="signal">Segnale</string>
+    <string name="range_limited">La rete è più grande di /22: è stato scansionato solo il /24 del telefono.</string>
+    <string name="empty_title">Ancora nessun dispositivo</string>
+    <string name="empty_body">Tocca «Scansiona» per scoprire cosa è collegato a questa rete.</string>
+    <string name="group_online">Online</string>
+    <string name="group_offline">Non visti nell\'ultima scansione</string>
+    <string name="this_phone">Questo telefono</string>
+    <string name="role_self">Questo dispositivo</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="phase_discovery">Ricerca dispositivi</string>
+    <string name="phase_services">Servizi mDNS / UPnP</string>
+    <string name="phase_names">Lettura nomi</string>
+    <string name="msg_no_network">Nessuna rete Wi-Fi: collegati a una rete e riprova.</string>
+    <string name="msg_scan_done">Trovati %1$d dispositivi (%2$d con MAC)</string>
+    <string name="msg_scan_error">Errore durante la scansione: %1$s</string>
+    <string name="msg_error">Errore: %1$s</string>
+
+    <!-- Tipi di dispositivo -->
+    <string name="type_router">Router / access point</string>
+    <string name="type_computer">Computer</string>
+    <string name="type_server">Server / gestione remota</string>
+    <string name="type_phone">Telefono</string>
+    <string name="type_tablet">Tablet</string>
+    <string name="type_printer">Stampante</string>
+    <string name="type_tv">TV / media player</string>
+    <string name="type_speaker">Speaker / audio</string>
+    <string name="type_nas">NAS / archiviazione</string>
+    <string name="type_camera">Videocamera</string>
+    <string name="type_console">Console di gioco</string>
+    <string name="type_iot">Smart home / IoT</string>
+    <string name="type_unknown">Sconosciuto</string>
+
+    <!-- Scheda dispositivo -->
+    <string name="section_details">Dettagli</string>
+    <string name="section_ports">Porte aperte</string>
+    <string name="mac_from">da %1$s</string>
+    <string name="mac_random_from">MAC casuale · da %1$s</string>
+    <string name="mac_unavailable">non disponibile</string>
+    <string name="mac_unavailable_hint">Android non permette alle app di leggere direttamente i MAC: compare solo se il dispositivo lo annuncia (NetBIOS, mDNS, UPnP).</string>
+    <string name="field_vendor">Produttore</string>
+    <string name="field_brand">Marca</string>
+    <string name="field_model">Modello</string>
+    <string name="field_friendly">Nome UPnP/mDNS</string>
+    <string name="field_first_seen">Visto la prima volta</string>
+    <string name="field_last_seen">Visto l\'ultima volta</string>
+    <string name="field_matched_by">Riconosciuto da</string>
+    <string name="field_services">Servizi pubblicati</string>
+    <string name="match_self">questo telefono</string>
+    <string name="match_mac">indirizzo MAC</string>
+    <string name="match_udn">identificativo UPnP</string>
+    <string name="match_netbios">nome NetBIOS</string>
+    <string name="match_mdns">nome mDNS</string>
+    <string name="match_hostname">nome DNS</string>
+    <string name="match_ip">solo IP (nessun altro identificativo: se il router riassegna l\'indirizzo potrebbe essere un altro dispositivo)</string>
+    <string name="match_new">nuovo dispositivo</string>
+    <string name="msg_copied">Copiato: %1$s</string>
+    <string name="rename_title">Rinomina dispositivo</string>
+    <string name="rename_hint">Lascia vuoto per usare il nome rilevato</string>
+
+    <!-- Ping -->
+    <string name="ping_starting">avvio…</string>
+    <string name="ping_lost">perso</string>
+    <string name="ping_window">ultimi %1$d s</string>
+    <string name="ping_avg">medio</string>
+    <string name="ping_loss">persi</string>
+
+    <!-- Porte -->
+    <string name="ports_intro">Scopri quali servizi espone il dispositivo e aprili con un tocco.</string>
+    <string name="ports_common">Porte comuni</string>
+    <string name="ports_extended">Porte 1–1024</string>
+    <string name="ports_progress">Scansione %1$d/%2$d · %3$d aperte</string>
+    <string name="ports_result">%1$d aperte su %2$d provate in %3$s s</string>
+    <string name="ports_none">Nessuna porta aperta tra quelle provate. Il dispositivo potrebbe avere un firewall.</string>
+    <string name="port_unknown">sconosciuto</string>
+    <string name="port_open_browser">Browser</string>
+    <string name="port_open_ssh">SSH</string>
+    <string name="port_open_telnet">Telnet</string>
+    <string name="port_open_ftp">FTP</string>
+    <string name="port_open_smb">Cartelle condivise</string>
+    <string name="port_open_rdp">Desktop remoto</string>
+    <string name="port_open_vnc">VNC</string>
+    <string name="port_open_rtsp">Flusso video</string>
+    <string name="msg_no_app_for">Nessuna app installata per %1$s://. Indirizzo copiato negli appunti.</string>
+
+    <!-- Traceroute -->
+    <string name="trace_target">Destinazione (IP o nome)</string>
+    <string name="trace_intro">Mostra i router attraversati per arrivare alla destinazione: il tuo router, eventuali apparati dell\'operatore e la rete Internet. I tempi sono indicativi.</string>
+    <string name="trace_reached">Raggiunta in %1$d salti</string>
+    <string name="trace_not_reached">Non raggiunta (%1$d salti provati)</string>
+    <string name="trace_lan_hops">Salti in rete privata: %1$d</string>
+    <string name="trace_cgnat">Presente CGNAT (100.64.0.0/10): l\'operatore condivide l\'IP pubblico tra più clienti.</string>
+    <string name="trace_exit">Primo nodo pubblico: %1$s</string>
+    <string name="trace_no_reply">* (nessuna risposta)</string>
+    <string name="trace_unresolved">Impossibile risolvere %1$s</string>
+    <string name="zone_lan">Rete locale</string>
+    <string name="zone_cgnat">CGNAT operatore</string>
+    <string name="zone_internet">Internet</string>
+
+    <!-- Diagnostica -->
+    <string name="diag_empty">Nessuna scansione in questa sessione. Torna indietro, tocca «Scansiona» e riapri questa pagina.</string>
+    <string name="diag_copied">Diagnostica copiata negli appunti</string>
+
+    <!-- Informazioni -->
+    <string name="about_version">Versione %1$s</string>
+    <string name="about_badge">100% open source</string>
+    <string name="about_tagline">Scopri chi c\'è nella tua rete: dispositivi, nomi, produttori, porte aperte, ping e traceroute. Gratis e senza segreti: chiunque può leggere il codice.</string>
+    <string name="about_promises">Le nostre promesse</string>
+    <string name="promise_open">Tutto il codice sorgente è pubblico su GitHub con licenza GPL-3.0.</string>
+    <string name="promise_local">Tutto resta sul tuo telefono: niente cloud, nessun dato inviato a noi, nessuna statistica.</string>
+    <string name="promise_noaccount">Nessun account, nessun abbonamento, nessuna funzione a pagamento.</string>
+    <string name="promise_ads_play">Solo un piccolo banner, nella scheda del dispositivo, per sostenere lo sviluppo. La versione compilata dai sorgenti non ne ha.</string>
+    <string name="promise_ads_foss">Questa versione non ha alcuna pubblicità.</string>
+    <string name="link_source">Codice sorgente</string>
+    <string name="link_issues">Segnala un problema o proponi un\'idea</string>
+    <string name="link_license">Licenza</string>
+    <string name="link_privacy">Informativa privacy</string>
+    <string name="link_ad_consent">Scelte privacy pubblicità</string>
+    <string name="about_credits">Riconoscimenti</string>
+    <string name="credits_body">I nomi dei produttori vengono dal registro pubblico IEEE, tramite il file manuf di Wireshark. Font: Space Grotesk e JetBrains Mono (SIL Open Font License). Icone: Material Icons (Apache 2.0).</string>
+</resources>

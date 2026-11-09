@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">OpenLAN Scanner</string>
+
+    <!-- Generic actions -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_save">Save</string>
+    <string name="action_scan">Scan</string>
+    <string name="action_share">Share</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="scanning">Scanning…</string>
+    <string name="starting">Starting…</string>
+
+    <!-- Screens -->
+    <string name="about">About</string>
+    <string name="diagnostics">Diagnostics</string>
+    <string name="traceroute">Traceroute</string>
+
+    <!-- Device list -->
+    <string name="net_wifi">Wi-Fi network</string>
+    <string name="net_wired">Wired network</string>
+    <string name="no_network">No local network</string>
+    <string name="no_network_hint">Connect to a Wi-Fi network to scan it.</string>
+    <string name="ssid_unknown">Wi-Fi (name hidden)</string>
+    <string name="ssid_permission_hint">To see the network name, grant the location permission and turn on location.</string>
+    <string name="stat_online">online</string>
+    <string name="stat_known">known</string>
+    <string name="stat_last_scan">last scan</string>
+    <string name="access_point">Access point</string>
+    <string name="signal">Signal</string>
+    <string name="range_limited">The network is larger than /22: only the phone\'s /24 was scanned.</string>
+    <string name="empty_title">No devices yet</string>
+    <string name="empty_body">Tap “Scan” to discover what is connected to this network.</string>
+    <string name="group_online">Online</string>
+    <string name="group_offline">Not seen in last scan</string>
+    <string name="this_phone">This phone</string>
+    <string name="role_self">This device</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="phase_discovery">Looking for devices</string>
+    <string name="phase_services">mDNS / UPnP services</string>
+    <string name="phase_names">Reading names</string>
+    <string name="msg_no_network">No Wi-Fi network: connect to a network and try again.</string>
+    <string name="msg_scan_done">Found %1$d devices (%2$d with MAC)</string>
+    <string name="msg_scan_error">Scan failed: %1$s</string>
+    <string name="msg_error">Error: %1$s</string>
+
+    <!-- Device types -->
+    <string name="type_router">Router / access point</string>
+    <string name="type_computer">Computer</string>
+    <string name="type_server">Server / remote management</string>
+    <string name="type_phone">Phone</string>
+    <string name="type_tablet">Tablet</string>
+    <string name="type_printer">Printer</string>
+    <string name="type_tv">TV / media player</string>
+    <string name="type_speaker">Speaker / audio</string>
+    <string name="type_nas">NAS / storage</string>
+    <string name="type_camera">Camera</string>
+    <string name="type_console">Game console</string>
+    <string name="type_iot">Smart home / IoT</string>
+    <string name="type_unknown">Unknown</string>
+
+    <!-- Device detail -->
+    <string name="section_details">Details</string>
+    <string name="section_ports">Open ports</string>
+    <string name="mac_from">from %1$s</string>
+    <string name="mac_random_from">random MAC · from %1$s</string>
+    <string name="mac_unavailable">not available</string>
+    <string name="mac_unavailable_hint">Android doesn\'t let apps read MAC addresses directly: it is shown only when the device announces it (NetBIOS, mDNS, UPnP).</string>
+    <string name="field_vendor">Vendor</string>
+    <string name="field_brand">Brand</string>
+    <string name="field_model">Model</string>
+    <string name="field_friendly">UPnP/mDNS name</string>
+    <string name="field_first_seen">First seen</string>
+    <string name="field_last_seen">Last seen</string>
+    <string name="field_matched_by">Recognized by</string>
+    <string name="field_services">Published services</string>
+    <string name="match_self">this phone</string>
+    <string name="match_mac">MAC address</string>
+    <string name="match_udn">UPnP identifier</string>
+    <string name="match_netbios">NetBIOS name</string>
+    <string name="match_mdns">mDNS name</string>
+    <string name="match_hostname">DNS name</string>
+    <string name="match_ip">IP only (no other identifier: if the router reassigns the address it could be another device)</string>
+    <string name="match_new">new device</string>
+    <string name="msg_copied">Copied: %1$s</string>
+    <string name="rename_title">Rename device</string>
+    <string name="rename_hint">Leave empty to use the detected name</string>
+
+    <!-- Ping -->
+    <string name="ping_starting">starting…</string>
+    <string name="ping_lost">lost</string>
+    <string name="ping_window">last %1$d s</string>
+    <string name="ping_avg">avg</string>
+    <string name="ping_loss">lost</string>
+
+    <!-- Ports -->
+    <string name="ports_intro">Check which services the device exposes and open them with one tap.</string>
+    <string name="ports_common">Common ports</string>
+    <string name="ports_extended">Ports 1–1024</string>
+    <string name="ports_progress">Scanning %1$d/%2$d · %3$d open</string>
+    <string name="ports_result">%1$d open out of %2$d tested in %3$s s</string>
+    <string name="ports_none">No open ports among those tested. The device may have a firewall.</string>
+    <string name="port_unknown">unknown</string>
+    <string name="port_open_browser">Browser</string>
+    <string name="port_open_ssh">SSH</string>
+    <string name="port_open_telnet">Telnet</string>
+    <string name="port_open_ftp">FTP</string>
+    <string name="port_open_smb">Shared folders</string>
+    <string name="port_open_rdp">Remote desktop</string>
+    <string name="port_open_vnc">VNC</string>
+    <string name="port_open_rtsp">Video stream</string>
+    <string name="msg_no_app_for">No app installed for %1$s://. Address copied to the clipboard.</string>
+
+    <!-- Traceroute -->
+    <string name="trace_target">Destination (IP or name)</string>
+    <string name="trace_intro">Shows the routers crossed to reach the destination: your router, any provider equipment and the Internet. Times are approximate.</string>
+    <string name="trace_reached">Reached in %1$d hops</string>
+    <string name="trace_not_reached">Not reached (%1$d hops tried)</string>
+    <string name="trace_lan_hops">Hops in private networks: %1$d</string>
+    <string name="trace_cgnat">CGNAT detected (100.64.0.0/10): your provider shares one public IP among several customers.</string>
+    <string name="trace_exit">First public node: %1$s</string>
+    <string name="trace_no_reply">* (no reply)</string>
+    <string name="trace_unresolved">Cannot resolve %1$s</string>
+    <string name="zone_lan">Local network</string>
+    <string name="zone_cgnat">Provider CGNAT</string>
+    <string name="zone_internet">Internet</string>
+
+    <!-- Diagnostics -->
+    <string name="diag_empty">No scan in this session yet. Go back, tap “Scan” and open this page again.</string>
+    <string name="diag_copied">Diagnostics copied to the clipboard</string>
+
+    <!-- About -->
+    <string name="about_version">Version %1$s</string>
+    <string name="about_badge">100% open source</string>
+    <string name="about_tagline">Find out who is on your network: devices, names, vendors, open ports, ping and traceroute. Free, with nothing hidden: anyone can read the code.</string>
+    <string name="about_promises">Our promises</string>
+    <string name="promise_open">The full source code is public on GitHub under the GPL-3.0 license.</string>
+    <string name="promise_local">Everything stays on your phone: no cloud, no data sent to us, no analytics.</string>
+    <string name="promise_noaccount">No account, no subscription, no premium features.</string>
+    <string name="promise_ads_play">Just one small banner, only in the device page, to support development. The build from source has none.</string>
+    <string name="promise_ads_foss">This build has no ads at all.</string>
+    <string name="link_source">Source code</string>
+    <string name="link_issues">Report a problem or suggest an idea</string>
+    <string name="link_license">License</string>
+    <string name="link_privacy">Privacy policy</string>
+    <string name="link_ad_consent">Ad privacy choices</string>
+    <string name="about_credits">Credits</string>
+    <string name="credits_body">Vendor names come from the IEEE public registry, via the Wireshark manuf file. Fonts: Space Grotesk and JetBrains Mono (SIL Open Font License). Icons: Material Icons (Apache 2.0).</string>
+</resources>
